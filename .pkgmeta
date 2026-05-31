@@ -1,0 +1,7 @@
+# Wraps the repo's files into a folder named "HappyBooster" inside the zip,
+# matching how the addon installs. No embedded libraries to fetch.
+package-as: HappyBooster
+
+# Keep the CI workflow out of the packaged addon.
+ignore:
+  - .github
