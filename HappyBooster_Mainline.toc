@@ -1,0 +1,17 @@
+## Interface: 120005
+## Title: HappyBooster
+## Notes: Track boost runs per party/raid member with a movable window, minimap button, and on-frame counters. Integrates with Nova Instance Tracker (NIT).
+## Author: HappyBooster
+## Version: 3.15.4
+## SavedVariables: HappyBoosterDB
+## OptionalDeps: NovaInstanceTracker
+## IconTexture: Interface\AddOns\HappyBooster\media\happybooster.tga
+
+Core.lua
+Trade.lua
+TradePicker.lua
+Runs.lua
+Frames.lua
+UI.lua
+Minimap.lua
+Commands.lua
