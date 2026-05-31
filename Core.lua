@@ -37,7 +37,10 @@ do
     end
 end
 
-HB.version   = "3.15.4"
+-- Version is stamped from the git tag by the BigWigs packager at build time.
+-- In an unbuilt/local copy the keyword isn't substituted, so fall back to "dev".
+HB.version   = "@project-version@"
+if HB.version:find("@") then HB.version = "dev" end
 HB.addonName = addonName
 
 -- Flavor detection

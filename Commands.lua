@@ -7,7 +7,7 @@
 local addonName, HB = ...
 
 local function Help()
-    HB:Print("Window: |cffffff00/hb|r  (or the minimap coin, or a key binding)")
+    HB:Print("Window: |cffffff00/hb|r  (or the minimap coin)")
     print("  |cffffff00/hb mode booster|boosted|r - switch tracking mode")
     print("  |cffffff00/hb set <name|self> <n>|r  - set a player's runs")
     print("  |cffffff00/hb add <name|self> <±n>|r - adjust a player's runs")

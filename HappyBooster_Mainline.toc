@@ -2,7 +2,9 @@
 ## Title: HappyBooster
 ## Notes: Track boost runs per party/raid member with a movable window, minimap button, and on-frame counters. Integrates with Nova Instance Tracker (NIT).
 ## Author: HappyBooster
-## Version: 3.15.4
+## Version: @project-version@
+## X-Curse-Project-ID: 1557846
+## X-Wago-ID: 96ELkXNg
 ## SavedVariables: HappyBoosterDB
 ## OptionalDeps: NovaInstanceTracker
 ## IconTexture: Interface\AddOns\HappyBooster\media\happybooster.tga
