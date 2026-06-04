@@ -23,15 +23,18 @@ local function ResetState()
 end
 ResetState()
 local tradeGen = 0  -- bumped each TRADE_SHOW; guards delayed cleanup against a new trade
+local moneyTicker   -- repeating poll of the live trade money while the window is open
 
--- Capture trade money at any point during the trade. We keep the highest value
--- seen, because some clients briefly report 0 and the trade APIs return 0 once
--- the window closes. Reading at accept-time (below) is the reliable moment.
+-- Capture trade money during the trade. We keep the most recent NON-ZERO value,
+-- so lowering the amount before accepting is respected (250 -> 150 records 150),
+-- while a transient 0 (some clients report 0 mid-trade, and the APIs return 0
+-- once the window closes) never wipes a real amount. Offers lock at accept-time,
+-- so the last value captured then is the true agreed amount.
 local function CaptureMoney(where)
     local recv  = (GetTargetTradeMoney and GetTargetTradeMoney()) or 0
     local given = (GetPlayerTradeMoney and GetPlayerTradeMoney()) or 0
-    if recv  and recv  > (state.moneyRecv  or 0) then state.moneyRecv  = recv  end
-    if given and given > (state.moneyGiven or 0) then state.moneyGiven = given end
+    if recv  and recv  > 0 then state.moneyRecv  = recv  end
+    if given and given > 0 then state.moneyGiven = given end
     HB:Debug("Money @%s: given=%s recv=%s (kept given=%s recv=%s)",
              where, tostring(given), tostring(recv),
              tostring(state.moneyGiven), tostring(state.moneyRecv))
@@ -310,6 +313,13 @@ tradeFrame:SetScript("OnEvent", function(_, event, a1, a2)
         state.startMoney = GetMoney and GetMoney() or nil
         CapturePartner()
         if not state.partnerName then C_Timer.After(0.1, CapturePartner) end
+        -- Poll the live trade money a few times a second. Relying only on
+        -- TRADE_MONEY_CHANGED can miss an edit (the event isn't always reliable),
+        -- which would leave a stale amount; polling self-heals to the current value.
+        if moneyTicker then moneyTicker:Cancel() end
+        if C_Timer and C_Timer.NewTicker then
+            moneyTicker = C_Timer.NewTicker(0.25, function() CaptureMoney("POLL") end)
+        end
 
     elseif event == "TRADE_ACCEPT_UPDATE" then
         state.playerOK = (a1 == 1)
@@ -348,6 +358,7 @@ tradeFrame:SetScript("OnEvent", function(_, event, a1, a2)
 
     elseif event == "TRADE_CLOSED" then
         HB:Debug("TRADE_CLOSED (armed=%s partner=%s)", tostring(state.armed), tostring(state.partnerName))
+        if moneyTicker then moneyTicker:Cancel(); moneyTicker = nil end
         -- Some clients DO deliver both-accepted; honor it as a secondary path.
         if state.armed and state.partnerName then HandleComplete() end
         ScheduleCleanup()

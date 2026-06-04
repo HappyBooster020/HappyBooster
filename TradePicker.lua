@@ -86,8 +86,11 @@ local function ChooseDefault(list, current)
         for _, e in ipairs(list) do if e.key == k then return true end end
         return false
     end
-    if has(sessionPick) then return sessionPick end
+    -- The dungeon you're currently in wins by default, so a one-off pick made
+    -- earlier doesn't silently carry over once you've moved on. The sticky pick
+    -- is the fallback for when you're not in a recognized dungeon (e.g. in town).
     if has(current)     then return current end
+    if has(sessionPick) then return sessionPick end
     if has(lastPicked)  then return lastPicked end
     return list[1] and list[1].key or nil
 end
@@ -222,6 +225,9 @@ end
 function Picker:Show()
     if HB.IsBoosted and HB:IsBoosted() then return end   -- booster mode only
     local f = self:Build()
+    -- New trade: clear the live selection so the default is recomputed for where
+    -- you are now. (Refresh(), used mid-trade, deliberately preserves it.)
+    selected = nil
     self:Rebuild()
 
     f:ClearAllPoints()
